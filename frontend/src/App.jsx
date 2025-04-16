@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import Login from "../src/components/Login";
+import "./components/LoginRegister.css"
+
 import "./App.css";
 
 const AppContent = ({ isLoggedIn, setIsLoggedIn, userName, setUserName }) => {
