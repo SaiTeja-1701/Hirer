@@ -10,7 +10,7 @@ const AppContent = ({ isLoggedIn, setIsLoggedIn, userName, setUserName }) => {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://localhost:5000/user/logout", {
+      const response = await fetch("http://localhost:5000/logout", {
         method: "GET",
         credentials: "include",
       });
@@ -40,7 +40,7 @@ const AppContent = ({ isLoggedIn, setIsLoggedIn, userName, setUserName }) => {
   return (
     <>
       <Routes>
-        <Route path="/" element={<Login handleLogin={handleLogin} />} />
+        <Route path="/user/login" element={<Login handleLogin={handleLogin} />} />
         
       </Routes>
     </>
