@@ -38,7 +38,7 @@ const AppContent = ({ isLoggedIn, setIsLoggedIn, userName, setUserName }) => {
   return (
     <>
       <Routes>
-        <Route path="/user/login" element={<Login handleLogin={handleLogin} />} />
+        <Route path="/" element={<Login handleLogin={handleLogin} />} />
         
       </Routes>
     </>
