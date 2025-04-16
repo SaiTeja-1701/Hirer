@@ -2,8 +2,10 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const port = process.env.PORT || 3000;
+const cors = require("cors")
 const path = require("path");
 const User = require("./Model/user")
+const multer = require("multer");
 const Resume = require("./Model/resume")
 const bcrypt = require("bcryptjs")
 app.use("/resumes", express.static(path.join(__dirname, "Public/resumes")));
@@ -18,9 +20,9 @@ mongoose
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
 
-router.post('/signup', async (req, res) => {
+
+app.post('/signup', async (req, res) => {
   const { username, password, email } = req.body;
   try {
     const userExists = await User.findOne({ $or: [{ username }, { email }] });
@@ -38,7 +40,7 @@ router.post('/signup', async (req, res) => {
     res.status(500).json({ result: false, error: err.message });
   }
 });
-router.post("/login", async (req, res) => {
+app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -97,3 +99,6 @@ app.post("/upload", upload.single("resume"), async (req, res) => {
     res.status(500).json({ error: "Error uploading resume" });
   }
 });
+app.listen(5000,()=>{
+    console.log("server running on the port 5000")
+})
