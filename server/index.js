@@ -5,7 +5,10 @@ const port = process.env.PORT || 3000;
 const cors = require("cors")
 const path = require("path");
 const User = require("./Model/user")
+const router = require('./routes/user');
 const multer = require("multer");
+const cookieParser = require('cookie-parser');
+const checkCookies = require('./middlewares/auth');
 const Resume = require("./Model/resume")
 const bcrypt = require("bcryptjs")
 app.use("/resumes", express.static(path.join(__dirname, "Public/resumes")));
@@ -17,54 +20,57 @@ mongoose
 //views
 
 //Middlewares
-app.use(cors());
-app.use(express.json());
+app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(cookieParser());
+app.use(checkCookies("token"));
+app.use('/user', router);
 
+// app.post('/signup', async (req, res) => {
+//   const { username, password, email } = req.body;
+//   console.log("Signup body received:", req.body);
+//   try {
+//     const userExists = await User.findOne({ $or: [{ username }, { email }] });
+//     if (userExists) {
+//       return res.json({message:"user already exists with same email or password"});
+//     }
 
-app.post('/signup', async (req, res) => {
-  const { username, password, email } = req.body;
-  try {
-    const userExists = await User.findOne({ $or: [{ username }, { email }] });
-    if (userExists) {
-      return res.json({message:"user already exists with same email or password"});
-    }
+//     const salt = await bcrypt.genSalt(10);
+//     const hashedPassword = await bcrypt.hash(password, salt);
+//     await User.create({ username, password: hashedPassword, email });
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-    await User.create({ username, password: hashedPassword, email });
+//     return res.json({message:"Login Succesfull"});
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ result: false, error: err.message });
+//   }
+// });
+// app.post("/login", async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
 
-    return res.json({message:"Login Succesfull"});
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ result: false, error: err.message });
-  }
-});
-app.post("/login", async (req, res) => {
-  try {
-    const { email, password } = req.body;
+//     const user = await User.findOne({ email });
+//     if (!user) {
+//       console.log(user)
+//       return res.status(400).json({ message: "Invalid credentials" });
+//     }
 
-    const user = await User.findOne({ email });
-    if (!user) {
-      console.log(user)
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
+//     // Compare password
+//     const isMatch = await bcrypt.compare(password, user.password);
+//     console.log("isMatch: " + isMatch)
+//     if (!isMatch) {
+//       return res.status(400).json({ message: "Invalid credentials" });
+//     }
 
-    // Compare password
-    const isMatch = await bcrypt.compare(password, user.password);
-    console.log("isMatch: " + isMatch)
-    if (!isMatch) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
-
-    // Generate JWT Token
-    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "1h" });
-    console.log("token: " + token)
-    res.json({ token});
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+//     // Generate JWT Token
+//     const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "1h" });
+//     console.log("token: " + token)
+//     res.json({ token});
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// });
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
